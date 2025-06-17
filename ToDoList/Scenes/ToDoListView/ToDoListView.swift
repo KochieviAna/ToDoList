@@ -1,0 +1,105 @@
+//
+//  ToDoListView.swift
+//  ToDoList
+//
+//  Created by Techzy on 17.06.25.
+//
+
+import ComposableArchitecture
+import SwiftUI
+
+struct ToDoListView: View {
+    @Bindable var store: StoreOf<ToDoListFeature>
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(FilterType.allCases) { filter in
+                        Button(action: {
+                            store.send(.filterChanged(filter))
+                        }) {
+                            Text("\(filter.rawValue) (\(count(for: filter)))")
+                                .font(.system(size: 14, weight: .semibold))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    store.selectedFilter == filter ?
+                                    Color.black.cornerRadius(20) :
+                                        Color.gray.opacity(0.2).cornerRadius(20)
+                                )
+                                .foregroundColor(
+                                    store.selectedFilter == filter ? .white : .black
+                                )
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top)
+            }
+            
+            ForEach(filteredToDos) { toDo in
+                ToDoRowView(
+                    toDo: toDo,
+                    onCheckTapped: {
+                        store.send(.checkButtonTapped(id: toDo.id))
+                    },
+                    onTitleChanged: { newTitle in
+                        store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
+                    }
+                )
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+            
+            Spacer()
+        }
+        .navigationTitle("To Do")
+        .toolbar {
+            if store.selectedFilter != .completed {
+                ToolbarItem {
+                    Button("Add") {
+                        store.send(.addButtonTapped)
+                    }
+                    .foregroundStyle(.black)
+                }
+            }
+        }
+    }
+    
+    private var filteredToDos: IdentifiedArrayOf<ToDoModel> {
+        switch store.selectedFilter {
+        case .all:
+            return store.activeToDos + store.completedToDos
+        case .inProgress:
+            return store.activeToDos
+        case .completed:
+            return store.completedToDos
+        }
+    }
+    
+    private func count(for filter: FilterType) -> Int {
+        switch filter {
+        case .all:
+            return store.activeToDos.count + store.completedToDos.count
+        case .inProgress:
+            return store.activeToDos.count
+        case .completed:
+            return store.completedToDos.count
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ToDoListView(
+            store: Store(
+                initialState: ToDoListFeature.State(
+                    activeToDos: []
+                )
+            ) {
+                ToDoListFeature()._printChanges()
+            }
+        )
+    }
+}
