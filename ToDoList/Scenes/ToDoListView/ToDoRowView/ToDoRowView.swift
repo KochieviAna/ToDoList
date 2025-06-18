@@ -33,13 +33,14 @@ struct ToDoRowView: View {
                     .onChange(of: editableTitle) { _, newValue in
                         onTitleChanged(newValue)
                     }
-                
+
                 Spacer()
-                
+
                 Button(action: onCheckTapped) {
                     Image(systemName: toDo.isActive ? "circle" : "checkmark.circle.fill")
                         .foregroundStyle(.black)
                 }
+                .disabled(editableTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
             .frame(maxWidth: .infinity)
             
