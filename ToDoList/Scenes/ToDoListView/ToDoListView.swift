@@ -35,9 +35,7 @@ struct ToDoListView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
                                 .background(
-                                    store.selectedFilter == filter ?
-                                    Color.black.cornerRadius(20) :
-                                        Color.gray.opacity(0.2).cornerRadius(20)
+                                    filterBackground(for: filter)
                                 )
                                 .foregroundColor(
                                     store.selectedFilter == filter ? .white : .black
@@ -134,6 +132,20 @@ struct ToDoListView: View {
     private var isLastToDoIncomplete: Bool {
         guard let last = store.activeToDos.last else { return false }
         return last.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !last.isFinalized
+    }
+    
+    private func filterBackground(for filter: FilterType) -> some View {
+        let isSelected = store.selectedFilter == filter
+        let color: Color
+        
+        switch filter {
+        case .inProgress:
+            color = isSelected ? .orange : .orange.opacity(0.2)
+        case .completed:
+            color = isSelected ? .green : .green.opacity(0.2)
+        }
+        
+        return color.cornerRadius(20)
     }
 }
 
