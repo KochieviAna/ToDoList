@@ -49,17 +49,39 @@ struct ToDoListView: View {
                 .padding(.top)
             }
             
-            ForEach(filteredToDos) { toDo in
-                ToDoRowView(
-                    toDo: toDo,
-                    onCheckTapped: {
-                        store.send(.checkButtonTapped(id: toDo.id))
-                    },
-                    onTitleChanged: { newTitle in
-                        store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
+            List {
+                ForEach(filteredToDos) { toDo in
+                    ToDoRowView(
+                        toDo: toDo,
+                        onCheckTapped: {
+                            store.send(.checkButtonTapped(id: toDo.id))
+                        },
+                        onTitleChanged: { newTitle in
+                            store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
+                        },
+                        onRemoveTapped: {
+                            store.send(.removeToDo(id: toDo.id))
+                        },
+                        shouldFocus: isLastAndEmpty(toDo)
+                    )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            store.send(.removeToDo(id: toDo.id))
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
-                )
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button {
+                            store.send(.checkButtonTapped(id: toDo.id))
+                        } label: {
+                            Label(toDo.isActive ? "Complete" : "Undo", systemImage: toDo.isActive ? "checkmark.circle" : "arrow.uturn.left.circle")
+                        }
+                        .tint(toDo.isActive ? .green : .orange)
+                    }
+                }
             }
+            .listStyle(.plain)
             .padding(.horizontal)
             .padding(.vertical, 4)
             
@@ -68,7 +90,7 @@ struct ToDoListView: View {
         .navigationTitle("To Do")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if (store.selectedFilter == .all || store.selectedFilter == .inProgress),
+                if store.selectedFilter == .inProgress,
                    shouldShowToggleAllButton {
                     Button(shouldMarkAllCompleted ? "Complete All" : "Uncheck All") {
                         store.send(.toggleAllToDos)
@@ -80,7 +102,8 @@ struct ToDoListView: View {
                     Button("Add") {
                         store.send(.addButtonTapped)
                     }
-                    .foregroundStyle(.black)
+                    .disabled(isLastToDoIncomplete)
+                    .foregroundStyle(isLastToDoIncomplete ? Color.gray.opacity(0.5) : .black)
                 }
             }
         }
@@ -88,8 +111,6 @@ struct ToDoListView: View {
     
     private var filteredToDos: IdentifiedArrayOf<ToDoModel> {
         switch store.selectedFilter {
-        case .all:
-            return store.activeToDos + store.completedToDos
         case .inProgress:
             return store.activeToDos
         case .completed:
@@ -99,13 +120,20 @@ struct ToDoListView: View {
     
     private func count(for filter: FilterType) -> Int {
         switch filter {
-        case .all:
-            return store.activeToDos.count + store.completedToDos.count
         case .inProgress:
             return store.activeToDos.count
         case .completed:
             return store.completedToDos.count
         }
+    }
+    
+    private func isLastAndEmpty(_ toDo: ToDoModel) -> Bool {
+        return toDo == store.activeToDos.last && toDo.title.isEmpty
+    }
+    
+    private var isLastToDoIncomplete: Bool {
+        guard let last = store.activeToDos.last else { return false }
+        return last.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !last.isFinalized
     }
 }
 

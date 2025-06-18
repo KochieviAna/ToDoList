@@ -14,7 +14,7 @@ struct ToDoListFeature {
     struct State: Equatable {
         var activeToDos: IdentifiedArrayOf<ToDoModel> = []
         var completedToDos: IdentifiedArrayOf<ToDoModel> = []
-        var selectedFilter: FilterType = .all
+        var selectedFilter: FilterType = .inProgress
     }
     
     enum Action: BindableAction {
@@ -33,7 +33,11 @@ struct ToDoListFeature {
         Reduce { state, action in
             switch action {
             case .addButtonTapped:
-                let newToDo = ToDoModel(id: UUID(), title: "")
+                if let last = state.activeToDos.last,
+                   last.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !last.isFinalized {
+                    return .none
+                }
+                let newToDo = ToDoModel(id: UUID(), title: "", isActive: true, isFinalized: false)
                 state.activeToDos.append(newToDo)
                 ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
@@ -64,8 +68,9 @@ struct ToDoListFeature {
             case let .titleChanged(id, newTitle):
                 if let index = state.activeToDos.firstIndex(where: { $0.id == id }) {
                     state.activeToDos[index].title = newTitle
-                } else if let index = state.completedToDos.firstIndex(where: { $0.id == id }) {
-                    state.completedToDos[index].title = newTitle
+                    if !newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        state.activeToDos[index].isFinalized = true
+                    }
                 }
                 ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none

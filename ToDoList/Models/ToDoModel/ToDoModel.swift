@@ -13,10 +13,10 @@ struct ToDoModel: Equatable, Identifiable, Codable {
     let id: UUID
     var title = ""
     var isActive = true
+    var isFinalized = false
 }
 
 enum FilterType: String, CaseIterable, Equatable, Identifiable {
-    case all = "All"
     case inProgress = "In Progress"
     case completed = "Completed"
     
