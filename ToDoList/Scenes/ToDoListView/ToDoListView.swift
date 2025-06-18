@@ -11,6 +11,17 @@ import SwiftUI
 struct ToDoListView: View {
     @Bindable var store: StoreOf<ToDoListFeature>
     
+    private var shouldShowToggleAllButton: Bool {
+        let nonEmptyActive = store.activeToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let nonEmptyCompleted = store.completedToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        return (nonEmptyActive.count + nonEmptyCompleted.count) > 1
+    }
+    
+    private var shouldMarkAllCompleted: Bool {
+        let nonEmptyActive = store.activeToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        return !nonEmptyActive.isEmpty
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -57,15 +68,12 @@ struct ToDoListView: View {
         .navigationTitle("To Do")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if store.selectedFilter == .all || store.selectedFilter == .inProgress {
-                    Button("Complete All") {
+                if (store.selectedFilter == .all || store.selectedFilter == .inProgress),
+                   shouldShowToggleAllButton {
+                    Button(shouldMarkAllCompleted ? "Complete All" : "Uncheck All") {
                         store.send(.toggleAllToDos)
                     }
                     .foregroundStyle(.black)
-                    .disabled(
-                        !store.activeToDos.contains(where: { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) &&
-                        !store.completedToDos.contains(where: { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
-                    )
                 }
                 
                 if store.selectedFilter != .completed {
