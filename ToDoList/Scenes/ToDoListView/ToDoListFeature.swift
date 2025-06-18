@@ -8,14 +8,6 @@
 import ComposableArchitecture
 import SwiftUI
 
-enum FilterType: String, CaseIterable, Equatable, Identifiable {
-    case all = "All"
-    case inProgress = "In Progress"
-    case completed = "Completed"
-    
-    var id: String { rawValue }
-}
-
 @Reducer
 struct ToDoListFeature {
     @ObservableState
@@ -32,6 +24,7 @@ struct ToDoListFeature {
         case filterChanged(FilterType)
         case removeToDo(id: ToDoModel.ID)
         case titleChanged(id: ToDoModel.ID, newTitle: String)
+        case toggleAllToDos
     }
     
     var body: some ReducerOf<Self> {
@@ -42,6 +35,7 @@ struct ToDoListFeature {
             case .addButtonTapped:
                 let newToDo = ToDoModel(id: UUID(), title: "")
                 state.activeToDos.append(newToDo)
+                ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
                 
             case let .checkButtonTapped(id):
@@ -54,6 +48,7 @@ struct ToDoListFeature {
                     toDo.isActive.toggle()
                     state.activeToDos.append(toDo)
                 }
+                ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
                 
             case let .filterChanged(newFilter):
@@ -63,6 +58,7 @@ struct ToDoListFeature {
             case let .removeToDo(id):
                 state.activeToDos.remove(id: id)
                 state.completedToDos.remove(id: id)
+                ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
                 
             case let .titleChanged(id, newTitle):
@@ -71,6 +67,25 @@ struct ToDoListFeature {
                 } else if let index = state.completedToDos.firstIndex(where: { $0.id == id }) {
                     state.completedToDos[index].title = newTitle
                 }
+                ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                return .none
+                
+            case .toggleAllToDos:
+                let nonEmptyActive = state.activeToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                let nonEmptyCompleted = state.completedToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                
+                let shouldMarkAllCompleted = !nonEmptyActive.isEmpty
+                
+                if shouldMarkAllCompleted {
+                    let moved = nonEmptyActive.map { var todo = $0; todo.isActive = false; return todo }
+                    state.completedToDos.append(contentsOf: moved)
+                    state.activeToDos.removeAll(where: { nonEmptyActive.map(\.id).contains($0.id) })
+                } else {
+                    let moved = nonEmptyCompleted.map { var todo = $0; todo.isActive = true; return todo }
+                    state.activeToDos.append(contentsOf: moved)
+                    state.completedToDos.removeAll(where: { nonEmptyCompleted.map(\.id).contains($0.id) })
+                }
+                ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
                 
             case .binding:

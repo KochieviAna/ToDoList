@@ -13,13 +13,15 @@ struct ToDoListApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
+                let saved = ToDoPersistence.load()
                 ToDoListView(
                     store: Store(
                         initialState: ToDoListFeature.State(
-                            activeToDos: []
+                            activeToDos: IdentifiedArray(uniqueElements: saved.active),
+                            completedToDos: IdentifiedArray(uniqueElements: saved.completed)
                         )
                     ) {
-                        ToDoListFeature()._printChanges()
+                        ToDoListFeature()
                     }
                 )
             }

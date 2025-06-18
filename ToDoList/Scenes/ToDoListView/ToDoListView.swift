@@ -56,8 +56,19 @@ struct ToDoListView: View {
         }
         .navigationTitle("To Do")
         .toolbar {
-            if store.selectedFilter != .completed {
-                ToolbarItem {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                if store.selectedFilter == .all || store.selectedFilter == .inProgress {
+                    Button("Complete All") {
+                        store.send(.toggleAllToDos)
+                    }
+                    .foregroundStyle(.black)
+                    .disabled(
+                        !store.activeToDos.contains(where: { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) &&
+                        !store.completedToDos.contains(where: { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+                    )
+                }
+                
+                if store.selectedFilter != .completed {
                     Button("Add") {
                         store.send(.addButtonTapped)
                     }
