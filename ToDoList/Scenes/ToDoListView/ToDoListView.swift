@@ -11,10 +11,9 @@ import SwiftUI
 struct ToDoListView: View {
     @Bindable var store: StoreOf<ToDoListFeature>
     
-    private var shouldShowToggleAllButton: Bool {
+    private var shouldShowCompleteAllButton: Bool {
         let nonEmptyActive = store.activeToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        let nonEmptyCompleted = store.completedToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        return (nonEmptyActive.count + nonEmptyCompleted.count) > 1
+        return store.selectedFilter == .inProgress && nonEmptyActive.count > 1
     }
     
     private var shouldMarkAllCompleted: Bool {
@@ -107,9 +106,8 @@ struct ToDoListView: View {
         .navigationTitle("To Do")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if store.selectedFilter == .inProgress,
-                   shouldShowToggleAllButton {
-                    Button(shouldMarkAllCompleted ? "Complete All" : "Uncheck All") {
+                if shouldShowCompleteAllButton {
+                    Button("Complete All") {
                         store.send(.toggleAllToDos)
                     }
                     .foregroundStyle(.black)

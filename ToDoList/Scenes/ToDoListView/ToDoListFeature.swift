@@ -77,19 +77,11 @@ struct ToDoListFeature {
                 
             case .toggleAllToDos:
                 let nonEmptyActive = state.activeToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                let nonEmptyCompleted = state.completedToDos.filter { !$0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                guard !nonEmptyActive.isEmpty else { return .none }
                 
-                let shouldMarkAllCompleted = !nonEmptyActive.isEmpty
-                
-                if shouldMarkAllCompleted {
-                    let moved = nonEmptyActive.map { var todo = $0; todo.isActive = false; return todo }
-                    state.completedToDos.append(contentsOf: moved)
-                    state.activeToDos.removeAll(where: { nonEmptyActive.map(\.id).contains($0.id) })
-                } else {
-                    let moved = nonEmptyCompleted.map { var todo = $0; todo.isActive = true; return todo }
-                    state.activeToDos.append(contentsOf: moved)
-                    state.completedToDos.removeAll(where: { nonEmptyCompleted.map(\.id).contains($0.id) })
-                }
+                let moved = nonEmptyActive.map { var todo = $0; todo.isActive = false; return todo }
+                state.completedToDos.append(contentsOf: moved)
+                state.activeToDos.removeAll(where: { nonEmptyActive.map(\.id).contains($0.id) })
                 ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                 return .none
                 
