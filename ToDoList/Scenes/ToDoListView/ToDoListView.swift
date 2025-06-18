@@ -47,41 +47,60 @@ struct ToDoListView: View {
                 .padding(.top)
             }
             
-            List {
-                ForEach(filteredToDos) { toDo in
-                    ToDoRowView(
-                        toDo: toDo,
-                        onCheckTapped: {
-                            store.send(.checkButtonTapped(id: toDo.id))
-                        },
-                        onTitleChanged: { newTitle in
-                            store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
-                        },
-                        onRemoveTapped: {
-                            store.send(.removeToDo(id: toDo.id))
-                        },
-                        shouldFocus: isLastAndEmpty(toDo)
-                    )
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            store.send(.removeToDo(id: toDo.id))
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+            if store.activeToDos.isEmpty && store.completedToDos.isEmpty {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 12) {
+                            Image(systemName: "square.and.pencil")
+                                .font(.system(size: 48))
+                                .foregroundColor(.gray)
+                            Text("No to-dos yet")
+                                .font(.headline)
+                                .foregroundColor(.gray)
                         }
+                        Spacer()
                     }
-                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                        Button {
-                            store.send(.checkButtonTapped(id: toDo.id))
-                        } label: {
-                            Label(toDo.isActive ? "Complete" : "Undo", systemImage: toDo.isActive ? "checkmark.circle" : "arrow.uturn.left.circle")
+                    Spacer()
+                }
+            } else {
+                List {
+                    ForEach(filteredToDos) { toDo in
+                        ToDoRowView(
+                            toDo: toDo,
+                            onCheckTapped: {
+                                store.send(.checkButtonTapped(id: toDo.id))
+                            },
+                            onTitleChanged: { newTitle in
+                                store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
+                            },
+                            onRemoveTapped: {
+                                store.send(.removeToDo(id: toDo.id))
+                            },
+                            shouldFocus: isLastAndEmpty(toDo)
+                        )
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                store.send(.removeToDo(id: toDo.id))
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
                         }
-                        .tint(toDo.isActive ? .green : .orange)
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button {
+                                store.send(.checkButtonTapped(id: toDo.id))
+                            } label: {
+                                Label(toDo.isActive ? "Complete" : "Undo", systemImage: toDo.isActive ? "checkmark.circle" : "arrow.uturn.left.circle")
+                            }
+                            .tint(toDo.isActive ? .green : .orange)
+                        }
                     }
                 }
+                .listStyle(.plain)
+                .padding(.horizontal)
+                .padding(.vertical, 4)
             }
-            .listStyle(.plain)
-            .padding(.horizontal)
-            .padding(.vertical, 4)
             
             Spacer()
         }
@@ -137,14 +156,12 @@ struct ToDoListView: View {
     private func filterBackground(for filter: FilterType) -> some View {
         let isSelected = store.selectedFilter == filter
         let color: Color
-        
         switch filter {
         case .inProgress:
             color = isSelected ? .orange : .orange.opacity(0.2)
         case .completed:
             color = isSelected ? .green : .green.opacity(0.2)
         }
-        
         return color.cornerRadius(20)
     }
 }
