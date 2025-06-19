@@ -50,12 +50,12 @@ A modern task management app built with **SwiftUI**, leveraging **The Composable
 
 ## Screenshots
 
-<img src="https://github.com/user-attachments/assets/97a52164-f731-4421-a7e5-51703dc6839d" width="200"/>
-<img src="https://github.com/user-attachments/assets/bffbaf37-af2e-40e1-93b7-c2a8b79fa23d" width="200"/>
-<img src="https://github.com/user-attachments/assets/297f5649-60e9-494d-9a3c-92a73f496956" width="200"/>
-<img src="https://github.com/user-attachments/assets/0f4ea4f5-7b5b-4aa6-b133-0f05be1bbebe" width="200"/>
-<img src="https://github.com/user-attachments/assets/abf08a10-f4c3-44c8-b668-3a47eaf585ea" width="200"/>
 <img src="https://github.com/user-attachments/assets/8fbe7b97-14aa-4308-a49f-a248af027757" width="200"/>
+<img src="https://github.com/user-attachments/assets/abf08a10-f4c3-44c8-b668-3a47eaf585ea" width="200"/>
+<img src="https://github.com/user-attachments/assets/0f4ea4f5-7b5b-4aa6-b133-0f05be1bbebe" width="200"/>
+<img src="https://github.com/user-attachments/assets/297f5649-60e9-494d-9a3c-92a73f496956" width="200"/>
+<img src="https://github.com/user-attachments/assets/bffbaf37-af2e-40e1-93b7-c2a8b79fa23d" width="200"/>
+<img src="https://github.com/user-attachments/assets/97a52164-f731-4421-a7e5-51703dc6839d" width="200"/>
 
 ---
 
