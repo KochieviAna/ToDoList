@@ -10,13 +10,13 @@ import DependenciesMacros
 import Foundation
 
 @DependencyClient
-public struct ToDoPersistenceClient: Sendable {
+public struct ToDoPersistence: Sendable {
     public var save: @Sendable (_ active: [ToDoModel], _ completed: [ToDoModel]) -> Void = { _, _ in }
     public var load: @Sendable () -> (active: [ToDoModel], completed: [ToDoModel]) = { ([], []) }
 }
 
-extension ToDoPersistenceClient: DependencyKey {
-    public static var liveValue: ToDoPersistenceClient {
+extension ToDoPersistence: DependencyKey {
+    public static var liveValue: ToDoPersistence {
         @Sendable func save(active: [ToDoModel], completed: [ToDoModel]) {
             let data = ToDoSaveData(active: active, completed: completed)
             if let encoded = try? JSONEncoder().encode(data) {
@@ -41,9 +41,9 @@ extension ToDoPersistenceClient: DependencyKey {
 }
 
 public extension DependencyValues {
-    var toDoPersistence: ToDoPersistenceClient {
-        get { self[ToDoPersistenceClient.self] }
-        set { self[ToDoPersistenceClient.self] = newValue }
+    var toDoPersistence: ToDoPersistence {
+        get { self[ToDoPersistence.self] }
+        set { self[ToDoPersistence.self] = newValue }
     }
 }
 
