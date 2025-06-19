@@ -63,11 +63,11 @@ A modern task management app built with **SwiftUI**, leveraging **The Composable
 
 The app follows TCA-first architecture, making state management, dependency injection, and side effects clear and composable:
 
-- **`@Reducer` for handling app logic in `ToDoListFeature`
-- **`@ObservableState` & `@Bindable` for seamless state/UI sync
-- **`@DependencyClient` for easily swapping in persistence layers
-- **`IdentifiedArrayOf<ToDoModel>` for managing lists of tasks
-- **Tightly scoped actions and reducer logic keep the app predictable
+- `@Reducer` for handling app logic in `ToDoListFeature`
+- `@ObservableState` & `@Bindable` for seamless state/UI sync
+- `@DependencyClient` for easily swapping in persistence layers
+- `IdentifiedArrayOf<ToDoModel>` for managing lists of tasks
+- Tightly scoped actions and reducer logic keep the app predictable
 
 Folder structure includes:
 
