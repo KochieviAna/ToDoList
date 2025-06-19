@@ -9,10 +9,6 @@ import ComposableArchitecture
 import Dependencies
 import SwiftUI
 
-import ComposableArchitecture
-import Dependencies
-import SwiftUI
-
 @main
 struct ToDoListApp: App {
     var body: some Scene {
