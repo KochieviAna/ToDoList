@@ -6,6 +6,11 @@
 //
 
 import ComposableArchitecture
+import Dependencies
+import SwiftUI
+
+import ComposableArchitecture
+import Dependencies
 import SwiftUI
 
 @main
@@ -13,13 +18,20 @@ struct ToDoListApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                let saved = ToDoPersistence.load()
-                ToDoListView(
-                    store: Store(
-                        initialState: ToDoListFeature.State(
+                let initialState: ToDoListFeature.State = {
+                    withDependencies {_ in 
+                    } operation: {
+                        let saved = DependencyValues().toDoPersistence.load()
+                        return ToDoListFeature.State(
                             activeToDos: IdentifiedArray(uniqueElements: saved.active),
                             completedToDos: IdentifiedArray(uniqueElements: saved.completed)
                         )
+                    }
+                }()
+                
+                ToDoListView(
+                    store: Store(
+                        initialState: initialState
                     ) {
                         ToDoListFeature()
                     }

@@ -9,11 +9,18 @@ import ComposableArchitecture
 import Foundation
 
 @ObservableState
-struct ToDoModel: Equatable, Identifiable, Codable {
-    let id: UUID
-    var title = ""
-    var isActive = true
-    var isFinalized = false
+public struct ToDoModel: Equatable, Identifiable, Codable {
+    public let id: UUID
+    public var title = ""
+    public var isActive = true
+    public var isFinalized = false
+    
+    public init(id: UUID, title: String, isActive: Bool, isFinalized: Bool) {
+        self.id = id
+        self.title = title
+        self.isActive = isActive
+        self.isFinalized = isFinalized
+    }
 }
 
 enum FilterType: String, CaseIterable, Equatable, Identifiable {

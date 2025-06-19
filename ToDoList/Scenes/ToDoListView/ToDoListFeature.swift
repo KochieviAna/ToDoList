@@ -10,6 +10,8 @@ import SwiftUI
 
 @Reducer
 struct ToDoListFeature {
+    @Dependency(\.toDoPersistence) var toDoPersistence
+    
     @ObservableState
     struct State: Equatable {
         var activeToDos: IdentifiedArrayOf<ToDoModel> = []
@@ -46,7 +48,7 @@ struct ToDoListFeature {
                     }
                     let newToDo = ToDoModel(id: UUID(), title: "", isActive: true, isFinalized: false)
                     state.activeToDos.append(newToDo)
-                    ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                    toDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                     return .none
                     
                 case let .checkButtonTapped(id):
@@ -59,7 +61,7 @@ struct ToDoListFeature {
                         toDo.isActive.toggle()
                         state.activeToDos.append(toDo)
                     }
-                    ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                    toDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                     return .none
                     
                 case let .filterChanged(newFilter):
@@ -69,7 +71,7 @@ struct ToDoListFeature {
                 case let .removeToDo(id):
                     state.activeToDos.remove(id: id)
                     state.completedToDos.remove(id: id)
-                    ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                    toDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                     return .none
                     
                 case let .titleChanged(id, newTitle):
@@ -79,7 +81,7 @@ struct ToDoListFeature {
                             state.activeToDos[index].isFinalized = true
                         }
                     }
-                    ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                    toDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                     return .none
                     
                 case .toggleAllToDos:
@@ -89,7 +91,7 @@ struct ToDoListFeature {
                     let moved = nonEmptyActive.map { var todo = $0; todo.isActive = false; return todo }
                     state.completedToDos.append(contentsOf: moved)
                     state.activeToDos.removeAll(where: { nonEmptyActive.map(\.id).contains($0.id) })
-                    ToDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
+                    toDoPersistence.save(active: Array(state.activeToDos), completed: Array(state.completedToDos))
                     return .none
                 }
                 

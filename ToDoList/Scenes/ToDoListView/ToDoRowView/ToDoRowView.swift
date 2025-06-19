@@ -74,5 +74,16 @@ struct ToDoRowView: View {
 }
 
 #Preview {
-    ToDoRowView(toDo: ToDoModel(id: UUID()), onCheckTapped: {}, onTitleChanged: {_ in }, onRemoveTapped: {}, shouldFocus: false)
+    ToDoRowView(
+        toDo: ToDoModel(
+            id: UUID(),
+            title: "Sample Todo",
+            isActive: true,
+            isFinalized: true
+        ),
+        onCheckTapped: {},
+        onTitleChanged: { _ in },
+        onRemoveTapped: {},
+        shouldFocus: false
+    )
 }
