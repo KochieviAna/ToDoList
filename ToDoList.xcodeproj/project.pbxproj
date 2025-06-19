@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D73A50572E01829F00225CE9 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = D73A50562E01829F00225CE9 /* ComposableArchitecture */; };
+		D708D29D2E0402E3004600A7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = D708D29C2E0402E3004600A7 /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D73A50572E01829F00225CE9 /* ComposableArchitecture in Frameworks */,
+				D708D29D2E0402E3004600A7 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +117,7 @@
 			);
 			name = ToDoList;
 			packageProductDependencies = (
-				D73A50562E01829F00225CE9 /* ComposableArchitecture */,
+				D708D29C2E0402E3004600A7 /* ComposableArchitecture */,
 			);
 			productName = ToDoList;
 			productReference = D765FD182E017AB200668A2A /* ToDoList.app */;
@@ -202,7 +202,7 @@
 			mainGroup = D765FD0F2E017AB200668A2A;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				D73A50552E01829F00225CE9 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				D708D29B2E0402E3004600A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D765FD192E017AB200668A2A /* Products */;
@@ -608,7 +608,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		D73A50552E01829F00225CE9 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+		D708D29B2E0402E3004600A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
@@ -619,9 +619,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D73A50562E01829F00225CE9 /* ComposableArchitecture */ = {
+		D708D29C2E0402E3004600A7 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D73A50552E01829F00225CE9 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			package = D708D29B2E0402E3004600A7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
 /* End XCSwiftPackageProductDependency section */

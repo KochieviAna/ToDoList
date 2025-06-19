@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import SwiftUI
 
+@ViewAction(for: ToDoListFeature.self)
 struct ToDoListView: View {
     @Bindable var store: StoreOf<ToDoListFeature>
     
@@ -23,105 +24,120 @@ struct ToDoListView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(FilterType.allCases) { filter in
-                        Button(action: {
-                            store.send(.filterChanged(filter))
-                        }) {
-                            Text("\(filter.rawValue) (\(count(for: filter)))")
-                                .font(.system(size: 14, weight: .semibold))
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(
-                                    filterBackground(for: filter)
-                                )
-                                .foregroundColor(
-                                    store.selectedFilter == filter ? .white : .black
-                                )
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top)
-            }
+            filterButtonsView
             
-            if store.activeToDos.isEmpty && store.completedToDos.isEmpty {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            Image(systemName: "square.and.pencil")
-                                .font(.system(size: 48))
-                                .foregroundColor(.gray)
-                            Text("No to-dos yet")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                        }
-                        Spacer()
-                    }
-                    Spacer()
-                }
-            } else {
-                List {
-                    ForEach(filteredToDos) { toDo in
-                        ToDoRowView(
-                            toDo: toDo,
-                            onCheckTapped: {
-                                store.send(.checkButtonTapped(id: toDo.id))
-                            },
-                            onTitleChanged: { newTitle in
-                                store.send(.titleChanged(id: toDo.id, newTitle: newTitle))
-                            },
-                            onRemoveTapped: {
-                                store.send(.removeToDo(id: toDo.id))
-                            },
-                            shouldFocus: isLastAndEmpty(toDo)
-                        )
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                store.send(.removeToDo(id: toDo.id))
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button {
-                                store.send(.checkButtonTapped(id: toDo.id))
-                            } label: {
-                                Label(toDo.isActive ? "Complete" : "Undo", systemImage: toDo.isActive ? "checkmark.circle" : "arrow.uturn.left.circle")
-                            }
-                            .tint(toDo.isActive ? .green : .orange)
-                        }
-                    }
-                }
-                .listStyle(.plain)
-                .padding(.horizontal)
-                .padding(.vertical, 4)
-            }
-            
-            Spacer()
+            toDosView
         }
         .navigationTitle("To Do")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 if shouldShowCompleteAllButton {
                     Button("Complete All") {
-                        store.send(.toggleAllToDos)
+                        send(.toggleAllToDos)
                     }
                     .foregroundStyle(.black)
                 }
                 
                 if store.selectedFilter != .completed {
                     Button("Add") {
-                        store.send(.addButtonTapped)
+                        send(.addButtonTapped)
                     }
                     .disabled(isLastToDoIncomplete)
                     .foregroundStyle(isLastToDoIncomplete ? Color.gray.opacity(0.5) : .black)
                 }
             }
         }
+    }
+    
+    private var filterButtonsView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(FilterType.allCases) { filter in
+                    Button(action: {
+                        send(.filterChanged(filter))
+                    }) {
+                        Text("\(filter.rawValue) (\(count(for: filter)))")
+                            .font(.system(size: 14, weight: .semibold))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                filterBackground(for: filter)
+                            )
+                            .foregroundColor(
+                                store.selectedFilter == filter ? .white : .black
+                            )
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top)
+        }
+    }
+    
+    @ViewBuilder
+    private var toDosView: some View {
+        if store.activeToDos.isEmpty && store.completedToDos.isEmpty {
+            emptyToDoview
+        } else {
+            toDoListView
+        }
+    }
+    
+    private var emptyToDoview: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                VStack(spacing: 12) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray)
+                    Text("No to-dos yet")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+            }
+            Spacer()
+        }
+    }
+    
+    private var toDoListView: some View {
+        List {
+            ForEach(filteredToDos) { toDo in
+                ToDoRowView(
+                    toDo: toDo,
+                    onCheckTapped: {
+                        send(.checkButtonTapped(id: toDo.id))
+                    },
+                    onTitleChanged: { newTitle in
+                        send(.titleChanged(id: toDo.id, newTitle: newTitle))
+                    },
+                    onRemoveTapped: {
+                        send(.removeToDo(id: toDo.id))
+                    },
+                    shouldFocus: isLastAndEmpty(toDo)
+                )
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        send(.removeToDo(id: toDo.id))
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    Button {
+                        send(.checkButtonTapped(id: toDo.id))
+                    } label: {
+                        Label(toDo.isActive ? "Complete" : "Undo", systemImage: toDo.isActive ? "checkmark.circle" : "arrow.uturn.left.circle")
+                    }
+                    .tint(toDo.isActive ? .green : .orange)
+                }
+            }
+        }
+        .listStyle(.plain)
+        .padding(.horizontal)
+        .padding(.vertical, 4)
     }
     
     private var filteredToDos: IdentifiedArrayOf<ToDoModel> {
