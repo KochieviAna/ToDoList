@@ -1,6 +1,6 @@
 # ToDoList
 
-A modern task management app built with **SwiftUI**, leveraging **The Composable Architecture (TCA)** and **swift-dependencies**. Users can add, edit, complete, and filter their tasks in a clean and responsive interface, with persistent local storage powered by `UserDefaults`.
+A modern task management app built with **SwiftUI**, **The Composable Architecture (TCA)** and **swift-dependencies**. Users can add, edit, complete, and filter their tasks in a clean and responsive interface, with persistent local storage powered by `UserDefaults`.
 
 ---
 
