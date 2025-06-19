@@ -80,5 +80,5 @@ Folder structure includes:
 
 ## Challenges Faced
 
-- Data persistence: Encoded/decoded full model arrays to/from UserDefaults safely
+- Data persistence dependency creation: Encoded/decoded full model arrays to/from UserDefaults safely
 - TCA integration: Balanced logic, binding, and view actions cleanly for long-term maintainability
